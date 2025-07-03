@@ -19,7 +19,7 @@ if __name__ == "__main__":
     frequencias = [5, 10, 20, 30, 40, 60, 100]
     #frequencias = [100,101]
     
-    files = [f"../VIBSNAKE/dados/Acelerômetro_{i}Hz_1.lvm" for i in frequencias]
+    files = [f"dados/Acelerômetro_{i}Hz_1.lvm" for i in frequencias]
     
     syscoor = ["+", "+", "+", "+"]
     data = pd.DataFrame([])

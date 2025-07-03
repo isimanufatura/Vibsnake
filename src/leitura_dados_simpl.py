@@ -11,7 +11,7 @@ from statistics import mean, mode   # biblioteca estatística
 
 #Leitura das informações
 
-nome = '../VIBSNAKE/dados/Teste_Vibracao_Livre.lvm'
+nome = 'dados/Teste_Vibracao_Livre.lvm'
 dado = pd.read_csv(nome, header = 21, sep = '\s+', decimal=",")
 
 dados = dado.drop(columns=['Comment']) #exclusão da coluna de comentários
