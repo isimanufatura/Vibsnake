@@ -9,13 +9,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Parâmetros da viga
-L = 1.290
-E = 2.1e11
-b = 0.156
-h = 0.0415
-rho = 7800
-A = b * h
-I = (b * h**3) / 12
+L = 1.290 # m (comprimento da viga)
+E = 2.1e11 # Pa (Módulo de elasticidade do aço)
+b = 0.156 # m (largura da viga)
+h = 0.0415 # m (altura da viga)
+rho = 7800 # kg/m³ (densidade do aço)
+A = b * h # m² área da seção transversal
+I = (b * h**3) / 12 # m^4 (momento de inércia da seção transversal)
 mu = rho * A  # massa por metro
 
 # Função de forma e sua derivada segunda
