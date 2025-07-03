@@ -33,10 +33,10 @@ posicoes = [0.205, 0.487, 0.731, 0.947, 1.168, 1.290]  # m
 
 # Energia potencial (flexão)
 x_vals = np.linspace(0, L, 1000)
-U = 0.5 * E * I * np.trapz(d2phi_dx2(x_vals)**2, x_vals)
+U = 0.5 * E * I * np.trapezoid(d2phi_dx2(x_vals)**2, x_vals) #trapz is deprecated, using trapezoid instead
 
 # Energia cinética total
-T_cont = 0.5 * mu * np.trapz(phi(x_vals)**2, x_vals)
+T_cont = 0.5 * mu * np.trapezoid(phi(x_vals)**2, x_vals) #trapz is deprecated, using trapezoid instead
 T_massas = 0.5 * sum(m * phi(x)**2 for m, x in zip(massas, posicoes))
 T = T_cont + T_massas
 
