@@ -20,7 +20,14 @@ L = 1.290 # m (comprimento da viga)
 E = 2.1e11 # Pa (Módulo de elasticidade do aço)
 b = 0.156 # m (largura da viga)
 h = 0.0415 # m (altura da viga)
+
+
 rho = 7800 # kg/m³ (densidade do aço)
+m1 = 52186e-3
+V1 = 20663970e-9
+densidade1 = m1 / V1  # kg/m³
+rho = densidade1  # kg/m³ 
+
 A = b * h # m² área da seção transversal
 I = (b * h**3) / 12 # m^4 (momento de inércia da seção transversal)
 mu = rho * A  # massa por metro
@@ -55,8 +62,12 @@ x_link1 = np.linspace(0,220, len(I_link1), dtype=int) # m
 U1 = 0
 for i in range(len(I_link1)-1):
     U1 += 0.5 * E * I_link1[i] * (x_link1[i+1] - x_link1[i]) * (2 / L**2 - 6 * (x_link1[i] / L)**3)**2
-print(x_link1)
+print(f"U1 sbagliato: {U1:.2f} J")
 
+for i in range(len(I_link1)-1):
+    a = np.array([x_link1[i], x_link1[i+1]])
+    U1 += 0.5 * E * I_link1[i] * np.trapezoid(d2phi_dx2(a)**2, a)
+print(f"U1 corretto: {U1:.2f} J")
 
 
 # Massas concentradas
@@ -65,9 +76,30 @@ massas.reverse()
 
 posicoes = [0.205, 0.487, 0.731, 0.947, 1.168, 1.290]  # m
 
+print(f"Densidade do aço: {rho:.2f} kg/m³")
+m1 = 9998e-3
+V1 = 3408258e-9
+m1 = 52186e-3
+V1 = 20663970e-9
+densidade1 = m1 / V1  # kg/m³
+print(f"Densidade do primeiro elo: {densidade1:.2f} kg/m³")
+
+
 # Energia potencial (flexão)
 x_vals = np.linspace(0, L, 1000)
-U = 0.5 * E * I * np.trapezoid(d2phi_dx2(x_vals)**2, x_vals) #trapz is deprecated, using trapezoid instead
+# U = 0.5 * E * I * np.trapezoid(d2phi_dx2(x_vals)**2, x_vals) #trapz is deprecated, using trapezoid instead
+
+U_og = 0.5 * E * I * np.trapezoid(d2phi_dx2(x_vals)**2, x_vals) #trapz is deprecated, using trapezoid instead
+x_rest = np.linspace(250, L, 1000)
+U_rest = 0.5 * E * I * np.trapezoid(d2phi_dx2(x_rest)**2, x_rest) #trapz is deprecated, using trapezoid instead
+U1_calc = U_og - U_rest
+
+U = U_og
+
+print(f"U original: {U_og:.2f} J")
+print(f"U rest: {U_rest:.2f} J")
+print(f"U1 aproximado: {U1_calc:.2f} J")
+print(f"U1 variável: {U1:.2f} J")
 
 # Energia cinética total
 T_cont = 0.5 * mu * np.trapezoid(phi(x_vals)**2, x_vals) #trapz is deprecated, using trapezoid instead
