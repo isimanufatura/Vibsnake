@@ -121,3 +121,66 @@ plt.grid(True)
 plt.legend()
 plt.tight_layout()
 plt.show()
+
+# ======================================================================================================
+# Se baseando no Rayleigh's methods, porém calculando as energias seguindo
+# o estudo realizado no artigo "INFLUENCE OF THE MANIPULATOR CONFIGURATION ON VIBRATION EFFECTS"
+# PIETRUŚ, P., & GIERLAK, P. (2020). Influence of the manipulator configuration on vibration effects.
+# DOI 10.2478/ama-2023-0060 
+# ======================================================================================================
+
+# Mass moment of intertia of the links # kg*m^2
+# Retirados do SolidWorks criando o centro de massa da peça
+# e posteriormente um sistema de coordenadas no centro de massa
+# NOTA: Cuidado com a posição da peça em relação à montagem do sistema de coordenadas
+I1 = 358572.990 #kg*mm²
+Is2 = 52744.884 #kg*mm²
+Is3 = 29123.950 #kg*mm²
+Is4 = 85265 #kg*mm²
+Is5 = 1145 #kg*mm²
+Is6 = 5518 #kg*mm²
+
+m1 = 9803 # g
+m2 = 4696 # g
+m3 = 3414 # g
+m4 = 4018 # g
+m5 = 584 # g
+m6 = 2868 # g
+
+l2 = 338.24 #mm
+l3 = 580.33 #mm
+l4 = 823.58 #mm
+l5 = 981.82 #mm
+l6 = 1046.79 #mm
+
+beta1 = 0
+alpha1 = 0
+beta2 = 0
+alpha2 = 0
+beta3 = 0
+alpha3 = 0
+beta4 = 0
+alpha4 = 0
+beta5 = 0
+alpha5 = 0
+beta6 = 0
+alpha6 = 0
+
+q1 = beta1 + alpha1
+q2 = beta2 + alpha2
+q3 = beta3 + alpha3
+q4 = beta4 + alpha4
+q5 = beta5 + alpha5
+q6 = beta6 + alpha6
+
+# E = 1/2*I_i_A*q_i^2
+E1 = 0.5 * I1 * q1**2
+
+E2 = 0.5 * m2 * vs2**2 + 0.5 * Is2 * (q1 + q2)**2
+E3 = 0.5 * m3 * vs3**2 + 0.5 * Is3 * (q1 + q2 + q3)**2
+E4 = 0.5 * m4 * vs4**2 + 0.5 * Is4 * (q1 + q2 + q3 + q4)**2
+E5 = 0.5 * m5 * vs5**2 + 0.5 * Is5 * (q1 + q2 + q3 + q4 + q5)**2
+E6 = 0.5 * m6 * vs6**2 + 0.5 * Is6 * (q1 + q2 + q3 + q4 + q5 + q6)**2
+
+# Energia total
+E_total = E1 + E2 + E3 + E4 + E5 + E6
