@@ -8,6 +8,8 @@ Created on Wed Jun  4 10:16:28 2025
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+'''
 # Função de forma e sua derivada segunda
 def phi(x):
     return (x / L)**2 - (x / L)**3
@@ -121,6 +123,7 @@ plt.grid(True)
 plt.legend()
 plt.tight_layout()
 plt.show()
+'''
 
 # ======================================================================================================
 # Se baseando no Rayleigh's methods, porém calculando as energias seguindo
@@ -128,6 +131,8 @@ plt.show()
 # PIETRUŚ, P., & GIERLAK, P. (2020). Influence of the manipulator configuration on vibration effects.
 # DOI 10.2478/ama-2023-0060 
 # ======================================================================================================
+
+import sympy as sp
 
 # Mass moment of intertia of the links # kg*m^2
 # Retirados do SolidWorks criando o centro de massa da peça
@@ -140,18 +145,24 @@ Is4 = 85265 #kg*mm²
 Is5 = 1145 #kg*mm²
 Is6 = 5518 #kg*mm²
 
+I = [I1, Is2, Is3, Is4, Is5, Is6]  # kg*mm²
+
 m1 = 9803 # g
 m2 = 4696 # g
 m3 = 3414 # g
 m4 = 4018 # g
 m5 = 584 # g
 m6 = 2868 # g
+m = [m1, m2, m3, m4, m5, m6]  # g
 
+l1 = 220.00 #mm
 l2 = 338.24 #mm
 l3 = 580.33 #mm
 l4 = 823.58 #mm
 l5 = 981.82 #mm
 l6 = 1046.79 #mm
+
+L = [l1, l2, l3, l4, l5, l6]  # mm
 
 beta1 = 0
 alpha1 = 0
@@ -166,6 +177,9 @@ alpha5 = 0
 beta6 = 0
 alpha6 = 0
 
+ALPHA = [alpha1, alpha2, alpha3, alpha4, alpha5, alpha6]  # rad
+BETA = [beta1, beta2, beta3, beta4, beta5, beta6]  # rad
+
 q1 = beta1 + alpha1
 q2 = beta2 + alpha2
 q3 = beta3 + alpha3
@@ -173,14 +187,126 @@ q4 = beta4 + alpha4
 q5 = beta5 + alpha5
 q6 = beta6 + alpha6
 
-# E = 1/2*I_i_A*q_i^2
-E1 = 0.5 * I1 * q1**2
+links = 2 # Número de links do manipulador
 
-E2 = 0.5 * m2 * vs2**2 + 0.5 * Is2 * (q1 + q2)**2
-E3 = 0.5 * m3 * vs3**2 + 0.5 * Is3 * (q1 + q2 + q3)**2
-E4 = 0.5 * m4 * vs4**2 + 0.5 * Is4 * (q1 + q2 + q3 + q4)**2
-E5 = 0.5 * m5 * vs5**2 + 0.5 * Is5 * (q1 + q2 + q3 + q4 + q5)**2
-E6 = 0.5 * m6 * vs6**2 + 0.5 * Is6 * (q1 + q2 + q3 + q4 + q5 + q6)**2
+alpha1_dot = sp.symbols('a1_d')
+alpha2_dot = sp.symbols('a2_d')
+
+# E = 1/2*I_i_A*q_i^2
+
+
+def velocity(links, ALPHA, BETA, alpha1_dot, alpha2_dot):
+    xs_list = np.array([])
+    ys_list = np.array([])
+    xs_dot_list = np.array([])
+    ys_dot_list = np.array([])
+    vs_list = np.array([])
+    for i in range(links):
+        if i == 0:
+            alpha = ALPHA[i]
+            beta = BETA[i]
+            l = L[i]
+            xs = l*sp.cos(beta1 + alpha1)
+            ys = l*sp.sin(beta1 + alpha1)
+            xs_dot = -l*alpha1_dot*sp.sin(beta1 + alpha1)
+            ys_dot = l*alpha1_dot*sp.cos(beta1 + alpha1)
+            vs = sp.sqrt(xs_dot**2 + ys_dot**2)
+        else:
+            l += L[i]
+            beta += BETA[i]
+            alpha += ALPHA[i]
+            xs = xs + l*sp.cos(beta + alpha)
+            ys = ys + l*sp.sin(beta + alpha)
+            xs_dot = xs_dot - l*(alpha1_dot+alpha2_dot)*sp.sin(beta + alpha)
+            ys_dot = ys_dot + l*(alpha1_dot+alpha2_dot)*sp.cos(beta + alpha)
+            vs = sp.sqrt(xs_dot**2 + ys_dot**2)
+    xs_list = np.append(xs_list, xs)
+    ys_list = np.append(ys_list, ys)
+    xs_dot_list = np.append(xs_dot_list, xs_dot)
+    ys_dot_list = np.append(ys_dot_list, ys_dot)
+    vs_list = np.append(vs_list, vs)
+    
+    return xs_list, ys_list, xs_dot_list, ys_dot_list, vs_list
+
+def kinetic_energy(links, m, I, ALPHA, BETA, L,alpha1_dot, alpha2_dot):
+    E_list = np.array([])
+    _, _, _, _, vs = velocity(links, ALPHA, BETA, alpha1_dot, alpha2_dot)
+    for i in range(links):
+        if i == 0:
+            E = 0.5 * I[i] * alpha1_dot**2
+            Ei = 0.5 * I[i] * alpha1_dot**2
+        else:
+            E += 0.5 * m[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
+            Ei += 0.5 * m[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
+    E_list = np.append(E_list, Ei)
+    
+    return E, E_list
+
+E,E_list = kinetic_energy(links, m, I, ALPHA, BETA, L, alpha1_dot, alpha2_dot)
+
+print(E)
+print(E_list)
 
 # Energia total
-E_total = E1 + E2 + E3 + E4 + E5 + E6
+print("Energia cinética total:")
+sp.pprint(E)
+print("\nEnergia cinética de cada elo:")
+for i, Ei in enumerate(E_list):
+    print(f"Elo {i+1}:")
+    sp.pprint(Ei)
+
+
+''''
+def velocity(links, ALPHA, BETA, alpha1_dot, alpha2_dot):
+    xs_list = np.array([])
+    ys_list = np.array([])
+    xs_dot_list = np.array([])
+    ys_dot_list = np.array([])
+    vs_list = np.array([])
+    for i in range(links):
+        if i == 0:
+            alpha = ALPHA[i]
+            beta = BETA[i]
+            l = L[i]
+            xs = l*np.cos(beta1 + alpha1)
+            ys = l*np.sin(beta1 + alpha1)
+            xs_dot = -l*alpha1_dot*np.sin(beta1 + alpha1)
+            ys_dot = l*alpha1_dot*np.cos(beta1 + alpha1)
+            vs = np.sqrt(xs_dot**2 + ys_dot**2)
+        else:
+            l += L[i]
+            beta += BETA[i]
+            alpha += ALPHA[i]
+            xs = xs + l*np.cos(beta + alpha)
+            ys = ys + l*np.sin(beta + alpha)
+            xs_dot = xs_dot - l*(alpha1_dot+alpha2_dot)*np.sin(beta + alpha)
+            ys_dot = ys_dot + l*(alpha1_dot+alpha2_dot)*np.cos(beta + alpha)
+            vs = np.sqrt(xs_dot**2 + ys_dot**2)
+    xs_list = np.append(xs_list, xs)
+    ys_list = np.append(ys_list, ys)
+    xs_dot_list = np.append(xs_dot_list, xs_dot)
+    ys_dot_list = np.append(ys_dot_list, ys_dot)
+    vs_list = np.append(vs_list, vs)
+    
+    return xs_list, ys_list, xs_dot_list, ys_dot_list, vs_list
+
+def kinetic_energy(links, m, I, ALPHA, BETA, L,alpha1_dot, alpha2_dot):
+    _, _, _, _, vs = velocity(links, ALPHA, BETA, alpha1_dot, alpha2_dot)
+    for i in range(links):
+        if i == 0:
+            E = 0.5 * I[i] * alpha1_dot**2
+            Ei = 0.5 * I[i] * alpha1_dot**2
+        else:
+            E += 0.5 * m[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
+            Ei = 0.5 * m[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
+    E_list = np.append(E_list, Ei)
+    
+    return E, E_list
+
+E,E_list = kinetic_energy(links, m, I, ALPHA, BETA, L, alpha1_dot, alpha2_dot)
+
+# Energia total
+print(f"Energia cinética total: {E:.2f} J")
+print(f"Energia cinética de cada elo: {E_list}")
+
+'''
