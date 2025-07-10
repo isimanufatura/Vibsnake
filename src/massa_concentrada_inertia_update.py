@@ -138,6 +138,12 @@ import sympy as sp
 # Retirados do SolidWorks criando o centro de massa da peça
 # e posteriormente um sistema de coordenadas no centro de massa
 # NOTA: Cuidado com a posição da peça em relação à montagem do sistema de coordenadas
+
+k1 = 100e4 # N*m/rad
+k2 = 100e4 # N*m/rad
+
+K = [k1, k2]  # N*m/rad
+
 I1 = 358572.990 #kg*mm²
 Is2 = 52744.884 #kg*mm²
 Is3 = 29123.950 #kg*mm²
@@ -153,7 +159,8 @@ m3 = 3414 # g
 m4 = 4018 # g
 m5 = 584 # g
 m6 = 2868 # g
-m = [m1, m2, m3, m4, m5, m6]  # g
+
+M = [m1*1e-3, m2*1e-3, m3*1e-3, m4*1e-3, m5*1e-3, m6*1e-3]  # kg
 
 l1 = 220.00 #mm
 l2 = 338.24 #mm
@@ -162,7 +169,7 @@ l4 = 823.58 #mm
 l5 = 981.82 #mm
 l6 = 1046.79 #mm
 
-L = [l1, l2, l3, l4, l5, l6]  # mm
+L = [l1*1e-3, l2*1e-3, l3*1e-3, l4*1e-3, l5*1e-3, l6*1e-3]  # m
 
 beta1 = 0
 alpha1 = 0
@@ -191,6 +198,8 @@ links = 2 # Número de links do manipulador
 
 alpha1_dot = sp.symbols('a1_d')
 alpha2_dot = sp.symbols('a2_d')
+
+g = 9.81 # m/s² (aceleração da gravidade)
 
 # E = 1/2*I_i_A*q_i^2
 
@@ -228,7 +237,7 @@ def velocity(links, ALPHA, BETA, alpha1_dot, alpha2_dot):
     
     return xs_list, ys_list, xs_dot_list, ys_dot_list, vs_list
 
-def kinetic_energy(links, m, I, ALPHA, BETA, L,alpha1_dot, alpha2_dot):
+def kinetic_energy(links, M, I, ALPHA, BETA, L,alpha1_dot, alpha2_dot):
     E_list = np.array([])
     _, _, _, _, vs = velocity(links, ALPHA, BETA, alpha1_dot, alpha2_dot)
     for i in range(links):
@@ -236,16 +245,107 @@ def kinetic_energy(links, m, I, ALPHA, BETA, L,alpha1_dot, alpha2_dot):
             E = 0.5 * I[i] * alpha1_dot**2
             Ei = 0.5 * I[i] * alpha1_dot**2
         else:
-            E += 0.5 * m[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
-            Ei += 0.5 * m[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
-    E_list = np.append(E_list, Ei)
+            E += 0.5 * M[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
+            Ei += 0.5 * M[i] * vs**2 + 0.5 * I[i] * (alpha2_dot + alpha1_dot)**2
+        E_list = np.append(E_list, Ei)
     
     return E, E_list
 
-E,E_list = kinetic_energy(links, m, I, ALPHA, BETA, L, alpha1_dot, alpha2_dot)
+def potential_energy(links, M, ALPHA, BETA):
+    V_list = np.array([])
+    # Fo ignorada a energia potencial Vk (deformação estática)
+    for i in range(links):
+        l = L[i]
+        beta = BETA[i]
+        alpha = ALPHA[i]
+        m = M[i]
+        if i == 0:
+            Vg = m * g * l/2 * sp.sin(beta + alpha)
+        if i == 1:
+            Vg = m * g * (L[i-1] * sp.sin(BETA[i-1] + ALPHA[i-1]) +
+                          l * sp.sin(BETA[i-1] + beta + ALPHA[i-1] + alpha))
+        else:
+            Vg = 0
+        V_list = np.append(V_list, Vg)
+    V = sum(V_list)
+    return V, V_list
 
-print(E)
-print(E_list)
+E,E_list = kinetic_energy(links, M, I, ALPHA, BETA, L, alpha1_dot, alpha2_dot)
+V,V_list = potential_energy(links, M, ALPHA, BETA)
+
+def sum_theta(BETA,j):
+    theta_p = 0
+    for p in range(j):
+        theta_p += BETA[p]
+    return theta_p
+
+def static_def(links, M,BETA,L,Lc):
+    for i in range(links):
+        if i == 0:
+            sum1 = 0
+        else:
+            for j in range(links):
+                theta_p = sum_theta(BETA,i)
+                sum1 += L[i] * np.cos(theta_p)
+    M[i]*g*sum1 + M[i]*g*Lc[i]*np.cos(BETA[i])        
+         
+         
+def static_deflections(n_links, g, M, BETA, L, Lc, K):
+    """
+    Compute static deflections alpha_st for each joint i in an n-link arm.
+    n_links : int
+        Number of links (and joints).
+    g : float
+        Gravitational acceleration.
+    M : array_like of length n_links
+        Link masses m[0],…,m[n_links-1].
+    BETA : array_like of length n_links
+        Nominal joint angles beta[0],…,beta[n_links-1].
+    L : array_like of length n_links
+        Link lengths ℓ[0],…,ℓ[n_links-1].
+    Lc : array_like of length n_links
+        Centre-of-mass offsets ℓ_c[0],…,ℓ_c[n_links-1].
+    K : array_like of length n_links
+        Joint stiffnesses k[0],…,k[n_links-1].
+    """
+    alpha_st = np.zeros(n_links)
+
+    # Precompute cumulative sums of betas for link orientations θ_j
+    thetas = np.cumsum(BETA)  # θ[j] = β[0]+...+β[j]
+
+    for i in range(n_links):
+        torque = 0.0
+        print("i:\n",i)
+
+        # Sum torque contributions from each link j ≥ i
+        for j in range(i, n_links):
+            # lever arm from joint i to CoM of link j:
+            #   sum of full link-lengths ℓ[i]..ℓ[j-1], plus offset ℓ_c[j]
+            print('j:\n',j)
+            lever = np.sum(L[i:j]) + Lc[j]
+            print("lever:\n",lever)
+            a = M[j] * g * lever * np.cos(thetas[j])
+            print('a: \n', a)
+            torque += M[j] * g * lever * np.cos(thetas[j])
+            print('Torque_j:\n',torque)
+            
+            
+        print('Torque_i:\n',torque)
+
+        # static deflection α_i,st = – (total torque) / k_i
+        alpha_st[i] = - torque / K[i]
+
+    return alpha_st        
+
+def energia_potencial(links,K,L,Lc, BETA:np.array, ALPHA:np.array, alpha_st,):
+    Vk_list = np.zeros(links)
+    q = np.cumsum(BETA + ALPHA)
+    for i in range(links):
+        Vk_list[i] = 1/2 * K[i] * (ALPHA[i] + alpha_st[i])
+        
+        for j in range(i,links):
+            y = np.sum(L[i:j])*np.sin(q[i]) + Lc*np.sin(q[i])
+        
 
 # Energia total
 print("Energia cinética total:")
@@ -254,6 +354,14 @@ print("\nEnergia cinética de cada elo:")
 for i, Ei in enumerate(E_list):
     print(f"Elo {i+1}:")
     sp.pprint(Ei)
+    
+print(f"\nEnergia potencial total:")
+sp.pprint(V)
+print("\nEnergia potencial de cada elo:")
+for i, Vi in enumerate(V_list):
+    print(f"Elo {i+1}:")
+    sp.pprint(Vi)
+    
 
 
 ''''
