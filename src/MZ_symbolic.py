@@ -108,8 +108,8 @@ vs_expanded = [sp.expand_trig(vi) for vi in vs]
 vs_simplified = [sp.trigsimp(vi) for vi in vs_expanded]
 
 # Print results:
-for i, v in enumerate(vs_simplified):
-    print(f"v_{i} simplified = \n{v}\n")
+# for i, v in enumerate(vs_simplified):
+#     print(f"v_{i} simplified = \n{v}\n")
     
 # Substituindo a versão simplificada na saída da
 # função
@@ -147,17 +147,80 @@ E_expanded = [sp.expand_trig(ei) for ei in E]
 E_simplified = [sp.trigsimp(ei) for ei in E_expanded]
 
 # Print results:
-for i, e in enumerate(E_simplified):
-    print(f"E_{i} simplified = \n{e}\n")
+# for i, e in enumerate(E_simplified):
+#     print(f"E_{i} simplified = \n{e}\n")
 
 # Substituindo a versão simplificada na saída da
 # função
 E = sum(E_simplified)
+print(f"A energia cinética total E é: \n{E}\n")
+
+E = sp.expand(E)
+E = sp.collect(E, [αd1, αd2])
+print(f"A energia cinética total E agrupada é: \n{E}\n")
+# Corresponde exatamente à equação (24)
 
 # ============================================================
 # CHECK - OK - OK2 ===========================================
 # ============================================================
 
+      
+# Cálculo da energia potecial
+
+# Redefinindo a deflexão estática para facilitar o debugging
+# e checar a aplicação das condições de contorno
+
+αst1, αst2, αst3 = sp.symbols('αst1 αst2 αst3')
+αst = [αst1, αst2, αst3]
+
+def potential_energy(links, g, m, l, lc, β, α, αst,k):
+    α_s = list(accumulate(α))
+    β_s = list(accumulate(β))
+    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
+    vk = []
+    vg = []
+    V = []
+    vgxi = 0
+    for i in range(links):
+        vki = 1/2 * k[i] * (α[i] + αst[i])**2 # → OK
+        if i == 0:
+            vgi = m[i]*g * lc[i]*sp.sin(θ[i])
+        else:
+            vgxi += l[i-1]*sp.sin(θ[i-1])
+            vgi = m[i]*g*vgxi + m[i]*g*lc[i]*sp.sin(θ[i])
+        vk.append(vki)
+        vg.append(vgi) 
+        V.append(vki+vgi)
+    return vk,vg,V
+
+vk,vg,V = potential_energy(links, g, m, l, lc, β, α, αst, k)
+
+# Prints
+# for i,vi in enumerate(vk):
+#     print(f"Termo {i} de Vk:\n {vi} \n")
+#     
+# for i,vi in enumerate(vg):
+#     print(f"Termo {i} de Vg:\n {vi} \n")
+    
+V_tot = sum(V)
+V_tot = sp.expand(V_tot)
+
+print(f"V_tot normal: \n {V_tot} \n")
+
+def zero_αst_squared(links, αst):
+    αst_2 = [xi**2 for xi in αst]
+    subs_zero_αst_squared = {}
+    for i in range(links):
+        subs_zero_αst_squared[αst_2[i]] = 0
+    return subs_zero_αst_squared
+
+subs_zero_αst_squared = zero_αst_squared(links, αst)
+V_tot = V_tot.subs(subs_zero_αst_squared)
+print(f"V_tot zerados αst: \n {V_tot} \n")
+
+# ============================================================
+# CHECK - OK =================================================
+# ============================================================
 
 # Cálculo da deflexão estática
 
@@ -195,69 +258,23 @@ def static_deflection(links, g, m, l, lc, β):
 for i,αi in enumerate(α_st):
     print(f"Termo {i} de α_st:\n {αi}\n")
     
+
+# Substituindo as deflexões estáticas
+
+def αst_substitution(links, αst, α_st):
+    subs_αst = {}
+    for i in range(links):
+        subs_αst[αst[i]] = α_st[i]
+    return subs_αst
+
+subs_αst = αst_substitution(links, αst, α_st)
+V_tot = V_tot.subs(subs_αst)
+print(f"V_tot αst substituidos: \n {V_tot} \n")
+
+    
 # ============================================================
 # CHECK - Possível fonte de erro =============================
 # ============================================================
-        
-# Cálculo da energia potecial
-
-# Redefinindo a deflexão estática para facilitar o debugging
-# e checar a aplicação das condições de contorno
-
-αst1, αst2, αst3 = sp.symbols('αst1 αst2 αst3')
-αst = [αst1, αst2, αst3]
-
-def potential_energy(links, g, m, l, lc, β, α, αst,k):
-    α_s = list(accumulate(α))
-    β_s = list(accumulate(β))
-    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
-    vk = []
-    vg = []
-    V = []
-    vgxi = 0
-    for i in range(links):
-        vki = 1/2 * k[i] * (α[i] + αst[i])**2 # → OK
-        if i == 0:
-            vgi = m[i]*g * lc[i]*sp.sin(θ[i])
-        else:
-            vgxi += l[i-1]*sp.sin(θ[i-1])
-            vgi = m[i]*g*vgxi + m[i]*g*lc[i]*sp.sin(θ[i])
-        vk.append(vki)
-        vg.append(vgi) 
-        V.append(vki+vgi)
-    return vk,vg,V
-
-vk,vg,V = potential_energy(links, g, m, l, lc, β, α, αst, k)
-
-# Prints
-for i,vi in enumerate(vk):
-    print(f"Termo {i} de Vk:\n {vi} \n")
-    
-for i,vi in enumerate(vg):
-    print(f"Termo {i} de Vg:\n {vi} \n")
-
-# ============================================================
-# CHECK - OK =================================================
-# ============================================================
-
-V_tot = sum(V)
-
-print(f"V_tot normal: \n {V_tot} \n")
-
-def create_subs_αst(links, α, β):
-    α_s = list(accumulate(α))
-    β_s = list(accumulate(β))
-    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
-    subs = {}
-    for i in range(links):
-        subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
-    return subs
-
-
-
-
-
-
 
 def create_subs_ang_V(links, α, β):
     α_s = list(accumulate(α))
