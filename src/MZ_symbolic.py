@@ -205,7 +205,24 @@ vk,vg,V = potential_energy(links, g, m, l, lc, β, α, αst, k)
 V_tot = sum(V)
 V_tot = sp.expand(V_tot)
 
-print(f"V_tot normal: \n {V_tot} \n")
+print(f"Energia potencial total V: \n {V_tot} \n")
+
+def create_subs_ang_V(links, α, β):
+    α_s = list(accumulate(α))
+    β_s = list(accumulate(β))
+    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
+    subs = {}
+    for i in range(links):
+        subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
+    return subs
+
+subs = create_subs_ang_V(links, α, β)
+
+V_tot = V_tot.subs(subs)
+print(f"Energia potencial total V")
+print(f"com substituição das Eq. (7) e (8): \n {V_tot}\n")
+
+# -------------------- IGUAL EQUAÇÃO (9) -----------------------
 
 def zero_αst_squared(links, αst):
     αst_2 = [xi**2 for xi in αst]
@@ -216,7 +233,7 @@ def zero_αst_squared(links, αst):
 
 subs_zero_αst_squared = zero_αst_squared(links, αst)
 V_tot = V_tot.subs(subs_zero_αst_squared)
-print(f"V_tot zerados αst: \n {V_tot} \n")
+print(f"Energia potencial total V com αst² zerados: \n {V_tot} \n")
 
 # ============================================================
 # CHECK - OK =================================================
@@ -257,7 +274,6 @@ def static_deflection(links, g, m, l, lc, β):
 # Prints
 for i,αi in enumerate(α_st):
     print(f"Termo {i} de α_st:\n {αi}\n")
-    
 
 # Substituindo as deflexões estáticas
 
@@ -269,8 +285,7 @@ def αst_substitution(links, αst, α_st):
 
 subs_αst = αst_substitution(links, αst, α_st)
 V_tot = V_tot.subs(subs_αst)
-print(f"V_tot αst substituidos: \n {V_tot} \n")
-
+print(f"Energia potencial total V com αst calculados substituidos: \n {V_tot} \n")
     
 # ============================================================
 # CHECK - Possível fonte de erro =============================
