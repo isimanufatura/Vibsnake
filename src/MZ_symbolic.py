@@ -59,7 +59,7 @@ m = [m1, m2, m3]
 k1, k2, k3 = sp.symbols('k1 k2 k3')
 k = [k1, k2, k3]
 
-links = 2
+links = 3
 '''
 # Cálculo velocidades (eq. (22) e (23))
 
@@ -205,32 +205,79 @@ def potential_energy(links, g, m, l, lc, β, α, αst,k):
     θ = [ai + bi for ai, bi in zip(α_s, β_s)]
     vk = []
     vg = []
+    V = []
     vgxi = 0
     for i in range(links):
-        vki = 1/2 * k[i] * (α[i] + αst[i])
+        vki = 1/2 * k[i] * (α[i] + αst[i])**2 # → OK
         if i == 0:
             vgi = m[i]*g * lc[i]*sp.sin(θ[i])
         else:
             vgxi += l[i-1]*sp.sin(θ[i-1])
-            vgi = m[i]*g * (vgxi + lc[i]*sp.sin(θ[i]))
+            vgi = m[i]*g*vgxi + m[i]*g*lc[i]*sp.sin(θ[i])
         vk.append(vki)
         vg.append(vgi) 
-    return vk,vg
+        V.append(vki+vgi)
+    return vk,vg,V
 
-vk,vg = potential_energy(links, g, m, l, lc, β, α, αst, k)
+vk,vg,V = potential_energy(links, g, m, l, lc, β, α, αst, k)
 
 for i,vi in enumerate(vk):
-    print(f"Termo {i} de Vk:\n {vi}")
+    print(f"Termo {i} de Vk:\n {vi} \n")
     
 for i,vi in enumerate(vg):
-    print(f"Termo {i} de Vg:\n {vi}")
+    print(f"Termo {i} de Vg:\n {vi} \n")
 
 # ============================================================
 # CHECK - OK =================================================
 # ============================================================
 
+V_tot = sum(V)
 
+print(f"V_tot normal: \n {V_tot} \n")
 
+def create_subs(links, α, β):
+    α_s = list(accumulate(α))
+    β_s = list(accumulate(β))
+    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
+    subs = {}
+    for i in range(links):
+        subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
+    return subs
+
+subs = create_subs(links, α, β)
+
+# print(f"O dicionário de substituição da função é: \n {subs} \n")
+# 
+# subs = {
+#     sp.sin(β1 + α1): sp.sin(β1) + α1 * sp.cos(β1),
+#     sp.sin(β1 + β2 + α1 + α2): sp.sin(β1 + β2) + (α1 + α2) * sp.cos(β1 + β2),
+#     sp.sin(β1 + β2 + β3 + α1 + α2 + α3): 
+#         sp.sin(β1 + β2 + β3) + (α1 + α2 + α3) * sp.cos(β1 + β2 + β3),
+# }
+# 
+# print(f"O dicionário de substituição criado a mão é: \n {subs} \n")
+
+#
+# DICIONÁRIO DE SUBSTITUIÇÃO CRIADO COM SUCESSO PARA O NÚMERO DE LINKS
+#
+
+V_tot = V_tot.subs(subs)
+print(f"V_tot primeiras substituições: \n {V_tot}")
+
+# subs_dict = {
+#     sp.sin(α1): α1,
+#     sp.cos(α1): 1,
+#     sp.sin(α1 + α2): α1 + α2,
+#     sp.cos(α1 + α2): 1
+# }
+# 
+# V_tot_small_angle = V_tot.subs(subs_dict)
+# 
+# print(f"V_tot segundas substituições: \n {V_tot_small_angle}")
+
+# ============================================================
+# CHECK - OK =================================================
+# ============================================================
 
 
 
