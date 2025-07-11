@@ -224,16 +224,7 @@ print(f"com substituição das Eq. (7) e (8): \n {V_tot}\n")
 
 # -------------------- IGUAL EQUAÇÃO (9) -----------------------
 
-def zero_αst_squared(links, αst):
-    αst_2 = [xi**2 for xi in αst]
-    subs_zero_αst_squared = {}
-    for i in range(links):
-        subs_zero_αst_squared[αst_2[i]] = 0
-    return subs_zero_αst_squared
 
-subs_zero_αst_squared = zero_αst_squared(links, αst)
-V_tot = V_tot.subs(subs_zero_αst_squared)
-print(f"Energia potencial total V com αst² zerados: \n {V_tot} \n")
 
 # ============================================================
 # CHECK - OK =================================================
@@ -274,6 +265,19 @@ def static_deflection(links, g, m, l, lc, β):
 # Prints
 for i,αi in enumerate(α_st):
     print(f"Termo {i} de α_st:\n {αi}\n")
+    
+# Substituindo as deflexões estáticas ao quadrado
+
+def zero_αst_squared(links, αst):
+    αst_2 = [xi**2 for xi in αst]
+    subs_zero_αst_squared = {}
+    for i in range(links):
+        subs_zero_αst_squared[αst_2[i]] = 0
+    return subs_zero_αst_squared
+
+subs_zero_αst_squared = zero_αst_squared(links, αst)
+V_tot = V_tot.subs(subs_zero_αst_squared)
+print(f"Energia potencial total V com αst² zerados: \n {V_tot} \n")
 
 # Substituindo as deflexões estáticas
 
@@ -286,54 +290,16 @@ def αst_substitution(links, αst, α_st):
 subs_αst = αst_substitution(links, αst, α_st)
 V_tot = V_tot.subs(subs_αst)
 print(f"Energia potencial total V com αst calculados substituidos: \n {V_tot} \n")
+
+V_tot = sp.simplify(V_tot)
+print(f"Energia potencial total V simplificada: \n {V_tot} \n")
+
+# ----------------- IGUAL À EQUAÇÃO (14) ---------------------
     
 # ============================================================
 # CHECK - Possível fonte de erro =============================
 # ============================================================
 
-def create_subs_ang_V(links, α, β):
-    α_s = list(accumulate(α))
-    β_s = list(accumulate(β))
-    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
-    subs = {}
-    for i in range(links):
-        subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
-    return subs
-
-subs = create_subs_ang_V(links, α, β)
-
-V_tot = V_tot.subs(subs)
-print(f"V_tot primeiras substituições: \n {V_tot}\n")
-
-# print(f"O dicionário de substituição da função é: \n {subs} \n")
-# 
-# subs = {
-#     sp.sin(β1 + α1): sp.sin(β1) + α1 * sp.cos(β1),
-#     sp.sin(β1 + β2 + α1 + α2): sp.sin(β1 + β2) + (α1 + α2) * sp.cos(β1 + β2),
-#     sp.sin(β1 + β2 + β3 + α1 + α2 + α3): 
-#         sp.sin(β1 + β2 + β3) + (α1 + α2 + α3) * sp.cos(β1 + β2 + β3),
-# }
-# 
-# print(f"O dicionário de substituição criado a mão é: \n {subs} \n")
-
-#
-# DICIONÁRIO DE SUBSTITUIÇÃO CRIADO COM SUCESSO PARA O NÚMERO DE LINKS
-#
-
-# Essa substituição não gera nenhuma modificação
-# subs_dict = {
-#     sp.sin(α1): α1,
-#     sp.cos(α1): 1,
-#     sp.sin(α1 + α2): α1 + α2,
-#     sp.cos(α1 + α2): 1
-# }
-# 
-# V_tot_small_angle = V_tot.subs(subs_dict)
-# 
-# print(f"V_tot segundas substituições: \n {V_tot_small_angle}")
-
-# Substituindo a versão simplificada na saída da
-# função
 V = V_tot
 
 # ============================================================
@@ -344,8 +310,8 @@ L = E - V
 
 l = sp.collect(L, [αd1, αd2])
 
-print(f"A função de Lagrange é:\n{L}\n")
-print(f"A função de Lagrange é:\n{l}\n")
+# print(f"A função de Lagrange é:\n{L}\n")
+# print(f"A função de Lagrange é:\n{l}\n")
 
 
 
