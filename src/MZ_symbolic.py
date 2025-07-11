@@ -47,6 +47,9 @@ lc = [lc1, lc2, lc3]
 α1, α2, α3 = sp.symbols('α1 α2 α3')
 α = [α1, α2, α3]
 
+αd1, αd2, αd3 = sp.symbols('α.1 α.2 α.3')
+αd = [αd1, αd2, αd3]
+
 β1, β2, β3 = sp.symbols('β1 β2 β3')
 β = [β1, β2, β3]
 
@@ -59,12 +62,13 @@ m = [m1, m2, m3]
 k1, k2, k3 = sp.symbols('k1 k2 k3')
 k = [k1, k2, k3]
 
-links = 3
-'''
+links = 2
+
 # Cálculo velocidades (eq. (22) e (23))
 
-def velocity(links, l, lc, α, β):
+def velocity(links, l, lc, α, αd, β):
     α_s = list(accumulate(α))
+    αd_s = list(accumulate(αd))
     β_s = list(accumulate(β))
     θ = [ai + bi for ai, bi in zip(α_s, β_s)]
     xs1 = 0
@@ -73,17 +77,17 @@ def velocity(links, l, lc, α, β):
     ys = [0]
     vs = [0]
     for i in range(links-1):
-        xs1 += - l[i] * α_s[i] * sp.sin(θ[i])
-        xi = xs1 - lc[i+1] * α_s[i+1] * sp.sin(θ[i+1])
+        xs1 += - l[i] * αd_s[i] * sp.sin(θ[i])
+        xi = xs1 - lc[i+1] * αd_s[i+1] * sp.sin(θ[i+1])
         xs.append(xi)
-        ys1 += l[i] * α_s[i] * sp.cos(θ[i])
-        yi = ys1 + lc[i+1] * α_s[i+1] * sp.cos(θ[i+1])
+        ys1 += l[i] * αd_s[i] * sp.cos(θ[i])
+        yi = ys1 + lc[i+1] * αd_s[i+1] * sp.cos(θ[i+1])
         ys.append(yi)
         vi = xi**2 + yi**2
         vs.append(vi)
     return xs,ys,vs
 
-xs,ys,vs = velocity(links, l, lc, α, β)
+xs,ys,vs = velocity(links, l, lc,α, αd, β)
 
 # DEBUGGING PRINT
 
@@ -104,22 +108,25 @@ vs_expanded = [sp.expand_trig(vi) for vi in vs]
 vs_simplified = [sp.trigsimp(vi) for vi in vs_expanded]
 
 # Print results:
-# for i, v in enumerate(vs_simplified):
-#     print(f"v_{i} simplified = {v}")
+for i, v in enumerate(vs_simplified):
+    print(f"v_{i} simplified = \n{v}\n")
     
 # Substituindo a versão simplificada na saída da
 # função
 vs = vs_simplified
 
 # ============================================================
-# CHECK - OK =================================================
+# CHECK - OK - OK2 ===========================================
 # ============================================================
 
 # Cálculo energia cinética
 # (Eq. (16),(17),(18),(24))
 
-def kinetic_energy(links, vs, α, I, m):
-    α_s = list(accumulate(α))
+# vs1, vs2 = sp.symbols('vs1**2 vs2**2')
+# vs = [vs1, vs2]
+
+def kinetic_energy(links, vs, αd, I, m):
+    α_s = list(accumulate(αd))
     E = []
     for i in range(links):
         e1 = 1/2*m[i]*vs[i]
@@ -128,7 +135,7 @@ def kinetic_energy(links, vs, α, I, m):
         E.append(ei)
     return E
 
-E = kinetic_energy(links, vs, α, I, m)
+E = kinetic_energy(links, vs, αd, I, m)
 
 # for i,ei in enumerate(E):
 #     print(f"Termo {i} de E:\n {ei}")
@@ -140,17 +147,17 @@ E_expanded = [sp.expand_trig(ei) for ei in E]
 E_simplified = [sp.trigsimp(ei) for ei in E_expanded]
 
 # Print results:
-# for i, e in enumerate(E_simplified):
-#     print(f"v_{i} simplified = {e}")
+for i, e in enumerate(E_simplified):
+    print(f"E_{i} simplified = \n{e}\n")
 
 # Substituindo a versão simplificada na saída da
 # função
-E = E_simplified
+E = sum(E_simplified)
 
 # ============================================================
-# CHECK - OK =================================================
+# CHECK - OK - OK2 ===========================================
 # ============================================================
-'''
+
 
 # Cálculo da deflexão estática
 
@@ -184,8 +191,9 @@ def static_deflection(links, g, m, l, lc, β):
 
 α_st = static_deflection(links, g, m, l, lc, β)
 
+# Prints
 for i,αi in enumerate(α_st):
-    print(f"Termo {i} de E:\n {αi}")
+    print(f"Termo {i} de α_st:\n {αi}\n")
     
 # ============================================================
 # CHECK - Possível fonte de erro =============================
@@ -221,6 +229,7 @@ def potential_energy(links, g, m, l, lc, β, α, αst,k):
 
 vk,vg,V = potential_energy(links, g, m, l, lc, β, α, αst, k)
 
+# Prints
 for i,vi in enumerate(vk):
     print(f"Termo {i} de Vk:\n {vi} \n")
     
@@ -235,7 +244,7 @@ V_tot = sum(V)
 
 print(f"V_tot normal: \n {V_tot} \n")
 
-def create_subs(links, α, β):
+def create_subs_αst(links, α, β):
     α_s = list(accumulate(α))
     β_s = list(accumulate(β))
     θ = [ai + bi for ai, bi in zip(α_s, β_s)]
@@ -244,7 +253,25 @@ def create_subs(links, α, β):
         subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
     return subs
 
-subs = create_subs(links, α, β)
+
+
+
+
+
+
+def create_subs_ang_V(links, α, β):
+    α_s = list(accumulate(α))
+    β_s = list(accumulate(β))
+    θ = [ai + bi for ai, bi in zip(α_s, β_s)]
+    subs = {}
+    for i in range(links):
+        subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
+    return subs
+
+subs = create_subs_ang_V(links, α, β)
+
+V_tot = V_tot.subs(subs)
+print(f"V_tot primeiras substituições: \n {V_tot}\n")
 
 # print(f"O dicionário de substituição da função é: \n {subs} \n")
 # 
@@ -261,9 +288,7 @@ subs = create_subs(links, α, β)
 # DICIONÁRIO DE SUBSTITUIÇÃO CRIADO COM SUCESSO PARA O NÚMERO DE LINKS
 #
 
-V_tot = V_tot.subs(subs)
-print(f"V_tot primeiras substituições: \n {V_tot}")
-
+# Essa substituição não gera nenhuma modificação
 # subs_dict = {
 #     sp.sin(α1): α1,
 #     sp.cos(α1): 1,
@@ -275,11 +300,20 @@ print(f"V_tot primeiras substituições: \n {V_tot}")
 # 
 # print(f"V_tot segundas substituições: \n {V_tot_small_angle}")
 
+# Substituindo a versão simplificada na saída da
+# função
+V = V_tot
+
 # ============================================================
 # CHECK - OK =================================================
 # ============================================================
 
+L = E - V
 
+l = sp.collect(L, [αd1, αd2])
+
+print(f"A função de Lagrange é:\n{L}\n")
+print(f"A função de Lagrange é:\n{l}\n")
 
 
 
