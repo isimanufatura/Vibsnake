@@ -222,7 +222,7 @@ V_tot = V_tot.subs(subs)
 print(f"Energia potencial total V")
 print(f"com substituição das Eq. (7) e (8): \n {V_tot}\n")
 
-# -------------------- IGUAL EQUAÇÃO (9) -----------------------
+# ------------------- IGUAL À EQUAÇÃO (9) --------------------
 
 
 
@@ -263,8 +263,8 @@ def static_deflection(links, g, m, l, lc, β):
 α_st = static_deflection(links, g, m, l, lc, β)
 
 # Prints
-for i,αi in enumerate(α_st):
-    print(f"Termo {i} de α_st:\n {αi}\n")
+# for i,αi in enumerate(α_st):
+#     print(f"Termo {i} de α_st:\n {αi}\n")
     
 # Substituindo as deflexões estáticas ao quadrado
 
@@ -294,7 +294,7 @@ print(f"Energia potencial total V com αst calculados substituidos: \n {V_tot} \
 V_tot = sp.simplify(V_tot)
 print(f"Energia potencial total V simplificada: \n {V_tot} \n")
 
-# ----------------- IGUAL À EQUAÇÃO (14) ---------------------
+# ------------------- IGUAL À EQUAÇÃO (14) -------------------
     
 # ============================================================
 # CHECK - Possível fonte de erro =============================
@@ -307,13 +307,13 @@ V = V_tot
 # ============================================================
 
 L = E - V
-
-l = sp.collect(L, [αd1, αd2])
-
 # print(f"A função de Lagrange é:\n{L}\n")
-# print(f"A função de Lagrange é:\n{l}\n")
 
+L = sp.collect(L, [αd1, αd2])
 
+print(f"A função de Lagrange é:\n{l}\n")
+
+# ------------------- IGUAL À EQUAÇÃO (25) -------------------
 
 
 # Cálculo energia potencial
