@@ -315,8 +315,30 @@ print(f"A função de Lagrange é:\n{l}\n")
 
 # ------------------- IGUAL À EQUAÇÃO (25) -------------------
 
+αdd = [sp.symbols(f'α..{i+1}') for i in range(len(α))]  # second derivatives
 
-# Cálculo energia potencial
-# (Eq. (3),(4),(5),(6) e (14))
+def euler_lagrange_eqs(L, α, αd, αdd):
+    eqs = []
+    for i in range(len(α)):
+        dL_dαd = sp.diff(L, αd[i])  # ∂L/∂α̇ᵢ
+        dL_dα  = sp.diff(L, α[i])   # ∂L/∂αᵢ
 
+        # Total derivative of ∂L/∂α̇ᵢ w.r.t. time
+        ddt_dL_dαd = 0
+        for j in range(len(α)):
+            ddt_dL_dαd += sp.diff(dL_dαd, α[j])  * αd[j]   # ∂/∂αⱼ * α̇ⱼ
+            ddt_dL_dαd += sp.diff(dL_dαd, αd[j]) * αdd[j]  # ∂/∂α̇ⱼ * α̈ⱼ
 
+        eq = sp.simplify(ddt_dL_dαd - dL_dα)
+        eqs.append(eq)
+    return eqs
+
+EL_eqs = euler_lagrange_eqs(L, α[:links], αd[:links], αdd)
+
+E = sp.collect(E, [αd1, αd2, αdd[0], αdd[1]])
+
+for i, eq in enumerate(EL_eqs):
+    print(f"Euler–Lagrange equation {i+1}:")
+    print(eq)
+    
+# ------------ IGUAIS ÀS EQUAÇÕES (26) E (27) ------------
