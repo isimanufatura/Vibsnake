@@ -4,7 +4,12 @@ from itertools import accumulate
 from scipy.linalg import eig
 
 '''
-
+# ======================================================================================================
+# Cálculo baseado no artigo
+# PIETRUŚ, P., & GIERLAK, P. (2020).
+# Influence of the manipulator configuration on vibration effects.
+# DOI 10.2478/ama-2023-0060 
+# ======================================================================================================
 '''
 # Valores obtidos pelo CAD
 
@@ -54,6 +59,10 @@ lc_values = [lc1, lc2, lc3, lc4, lc5] # m
 
 # Definir os número de links
 links = 5
+
+def freq_calculation(links,m_values,k_values,I_values,
+                     l_values,lc_values,β_values):
+    return frequencies_rad, frequencies_Hz
 
 g = sp.symbols('g')
 
