@@ -38,31 +38,31 @@ print(C)
 
 g = sp.symbols('g')
 
-l1, l2, l3 = sp.symbols('l1 l2 l3')
-l = [l1, l2, l3 ]
+l1, l2, l3, l4, l5, l6 = sp.symbols('l1 l2 l3 l4 l5 l6')
+l = [l1, l2, l3, l4, l5, l6]
 
-lc1, lc2, lc3 = sp.symbols('lc1 lc2 lc3')
-lc = [lc1, lc2, lc3]
+lc1, lc2, lc3, lc4, lc5, lc6 = sp.symbols('lc1 lc2 lc3 lc4 lc5 lc6')
+lc = [lc1, lc2, lc3, lc4, lc5, lc6]
 
-α1, α2, α3 = sp.symbols('α1 α2 α3')
-α = [α1, α2, α3]
+α1, α2, α3, α4, α5, α6 = sp.symbols('α1 α2 α3 α4 α5 α6')
+α = [α1, α2, α3, α4, α5, α6]
 
-αd1, αd2, αd3 = sp.symbols('α.1 α.2 α.3')
-αd = [αd1, αd2, αd3]
+αd1, αd2, αd3, αd4, αd5, αd6 = sp.symbols('α.1 α.2 α.3 α.4 α.5 α.6')
+αd = [αd1, αd2, αd3, αd4, αd5, αd6]
 
-β1, β2, β3 = sp.symbols('β1 β2 β3')
-β = [β1, β2, β3]
+β1, β2, β3, β4, β5, β6 = sp.symbols('β1 β2 β3 β4 β5 β6')
+β = [β1, β2, β3, β4, β5, β6]
 
-Ia, I2, I3 = sp.symbols('Ia I2 I3')
-I = [Ia, I2, I3]
+Ia, I2, I3, I4, I5, I6 = sp.symbols('Ia I2 I3 I4 I5 I6')
+I = [Ia, I2, I3, I4, I5, I6]
 
-m1, m2, m3 = sp.symbols('m1 m2 m3')
-m = [m1, m2, m3]
+m1, m2, m3, m4, m5, m6 = sp.symbols('m1 m2 m3 m4 m5 m6')
+m = [m1, m2, m3, m4, m5, m6]
 
-k1, k2, k3 = sp.symbols('k1 k2 k3')
-k = [k1, k2, k3]
+k1, k2, k3, k4, k5, k6 = sp.symbols('k1 k2 k3 k4 k5 k6')
+k = [k1, k2, k3, k4, k5, k6]
 
-links = 2
+links = 6
 
 # Cálculo velocidades (eq. (22) e (23))
 
@@ -170,8 +170,8 @@ print(f"A energia cinética total E agrupada é: \n{E}\n")
 # Redefinindo a deflexão estática para facilitar o debugging
 # e checar a aplicação das condições de contorno
 
-αst1, αst2, αst3 = sp.symbols('αst1 αst2 αst3')
-αst = [αst1, αst2, αst3]
+αst1, αst2, αst3, αst4, αst5, αst6  = sp.symbols('αst1 αst2 αst3 αst4 αst5 αst6')
+αst = [αst1, αst2, αst3, αst4, αst5, αst6]
 
 def potential_energy(links, g, m, l, lc, β, α, αst,k):
     α_s = list(accumulate(α))
@@ -335,10 +335,93 @@ def euler_lagrange_eqs(L, α, αd, αdd):
 
 EL_eqs = euler_lagrange_eqs(L, α[:links], αd[:links], αdd)
 
-E = sp.collect(E, [αd1, αd2, αdd[0], αdd[1]])
+# E = sp.collect(E, [αd1, αd2, αdd[0], αdd[1]])
 
 for i, eq in enumerate(EL_eqs):
     print(f"Euler–Lagrange equation {i+1}:")
     print(eq)
     
 # ------------ IGUAIS ÀS EQUAÇÕES (26) E (27) ------------
+
+# Zerando α e αd das equações de Euler-Lagrange
+def zero_EL(α,αd,EL_eqs):
+    α_zero = {v: 0 for v in α}
+    αd_zero = {v: 0 for v in αd}
+    subs = {**α_zero, **αd_zero}
+    EL_eqs_subs = [eq.subs(subs) for eq in EL_eqs]
+    return EL_eqs_subs
+
+M_eqs = zero_EL(α,αd,EL_eqs)
+
+for i, eq in enumerate(M_eqs):
+    print(f"\nM matrix equations {i+1}:\n")
+    print(eq)
+
+M, _ = sp.linear_eq_to_matrix(M_eqs, αdd[:links])
+# NOTA: o alpha foi completamente zerado, portanto é possível
+# utilizar na Eq.(40)
+
+print(M)
+
+K = sp.diag(*k[:links])
+
+# ------------ IGUAIS ÀS EQUAÇÕES (32) E (38) ------------
+
+# Substituindo os valores obtidos do CAD
+float_subs = {
+    k1 : 100e4, # N*m/rad
+    k2 : 100e4, # N*m/rad
+    k3 : 100e4, # N*m/rad
+    k4 : 100e4, # N*m/rad
+    k5 : 100e4, # N*m/rad
+    k6 : 100e4, # N*m/rad
+
+    Ia : 358572.990, #kg*mm²
+    I2: 52744.884, #kg*mm²
+    I3: 29123.950, #kg*mm²
+    I4: 85265, #kg*mm²
+    I5: 1145, #kg*mm²
+    I6: 5518, #kg*mm²
+
+    m1 : 9803e3, # kg
+    m2 : 4696e3, # kg
+    m3 : 3414e3, # kg
+    m4 : 4018e3, # kg
+    m5 : 584e3,  # kg
+    m6 : 2868e3, # kg
+
+    l1 : 220.00e3,  #mm
+    l2 : 338.24e3,  #mm
+    l3 : 580.33e3,  #mm
+    l4 : 823.58e3,  #mm
+    l5 : 981.82e3,  #mm
+    l6 : 1046.79e3, #mm
+}
+
+M = M.subs(float_subs).evalf()
+K = K.subs(float_subs).evalf()
+
+print(f"A matriz de massa M é: \n{M}\n")
+print(f"A matriz de rigidez K é: \n{K}\n")
+
+# --------------------------------------------------------
+# 
+# # Define symbolic ω²
+# λ = sp.symbols('lambda')
+# 
+# # Build the characteristic equation
+# char_eq = (K - λ*M).det()
+# 
+# # Solve the characteristic equation for λ = ω²
+# eigenvals = sp.solve(char_eq, λ)
+# 
+# frequencies_rad = [sp.sqrt(ev).evalf() for ev in eigenvals]
+# print("Natural frequencies ω (rad/s):")
+# for i, ω in enumerate(frequencies_rad):
+#     print(f"ω_{i+1} = {ω:.4f} rad/s")
+#     
+# frequencies_Hz = [ω / (2*sp.pi) for ω in frequencies_rad]
+# print("Natural frequencies f (Hz):")
+# for i, f in enumerate(frequencies_Hz):
+#     print(f"f_{i+1} = {f:.4f} Hz")
+
