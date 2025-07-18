@@ -1,9 +1,9 @@
-import MZ_symbolic
+import MZ_func as mz
 
 # Definir os número de links
 links = 5
 
-# Valores obtidos pelo CAD
+# Incluir valores de projeto CAD
 
 # Rigidez em N*m/rad
 k1,k2,k3,k4,k5 = (6.70e4, 3.10e4, 1.60e4, 0.47e4, 0.47e4)
@@ -33,3 +33,15 @@ l_values = [l1, l2, l3, l4, l5] # m
 lc_values = [lc1, lc2, lc3, lc4, lc5] # m
 β_values = [β1, β2, β3, β4, β5] # rad
 
+frequencies_rad, frequencies_Hz = mz.freq_calculation(links,m_values,k_values,I_values,
+                                                      l_values,lc_values,β_values)
+
+# Print dos resultados
+print("Natural frequencies f (rad/s):")
+for i, f in enumerate(frequencies_rad):
+    print(f"f_{i+1} = {f:.8f} Hz")
+
+# Print dos resultados
+print("Natural frequencies f (Hz):")
+for i, f in enumerate(frequencies_Hz):
+    print(f"f_{i+1} = {f:.8f} Hz")
