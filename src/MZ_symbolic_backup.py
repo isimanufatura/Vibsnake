@@ -10,6 +10,10 @@ from scipy.linalg import eig
 # Influence of the manipulator configuration on vibration effects.
 # DOI 10.2478/ama-2023-0060 
 # ======================================================================================================
+#
+# Programa inicial realizado para o cálculo simbólico
+# antes do rearranjo para facilidade de uso
+#
 '''
 # Valores obtidos pelo CAD
 

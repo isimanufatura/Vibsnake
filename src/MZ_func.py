@@ -10,56 +10,11 @@ from scipy.linalg import eig
 # Influence of the manipulator configuration on vibration effects.
 # DOI 10.2478/ama-2023-0060 
 # ======================================================================================================
+#
+# Funções utilizadas para cálculos simbolicos e substituição de valores
+# do problema para encontrar as frequências naturais do sistema
+#
 '''
-# Valores obtidos pelo CAD
-
-k1 = 6.70e4 # N*m/rad
-k2 = 3.10e4 # N*m/rad
-k3 = 1.60e4 # N*m/rad
-k4 = 0.47e4 # N*m/rad
-k5 = 0.47e4 # N*m/rad
-
-I1 = 237510.956e-4  #kg*m² #calculado em relação a A
-Is2 = 43253.680e-4 #kg*m²
-Is3 = 30574.85e-4  #kg*m²
-Is4 = 1145e-4      #kg*m²
-Is5 = 6328e-4      #kg*m²
-
-m1 = 6458.27e-3 # kg
-m2 = 4574.25e-3 # kg
-m3 = 4018e-3    # kg
-m4 = 584e-3     # kg
-m5 = 2868e-3    # kg
-
-l1 = 251.00e-3 #m
-l2 = 215.95e-3 #m
-l3 = 252.77e-3 #m
-l4 = 90.00e-3  #m
-l5 = 100.00e-3 #m
-
-lc1 = 155.59e-3 #m
-lc2 = 137.80e-3 #m
-lc3 = 137.01e-3 #m
-lc4 = 42.26e-3  #m
-lc5 = 17.07e-3  #m
-
-β1 = 0
-β2 = 0
-β3 = 0
-β4 = 0
-β5 = 0
-β6 = 0
-
-m_values = [m1, m2, m3, m4, m5]  # kg
-k_values = [k1, k2, k3, k4, k5]  # N*m/rad
-I_values = [I1, Is2, Is3, Is4, Is5]  # kg*m²
-l_values = [l1, l2, l3, l4, l5] # m
-lc_values = [lc1, lc2, lc3, lc4, lc5] # m
-β_values = [β1, β2, β3, β4, β5] # rad
-
-# Definir os número de links
-links = 5
-
 
 def velocity(links, l, lc, α, αd, β):
     α_s = list(accumulate(α))
@@ -354,18 +309,4 @@ def freq_calculation(links,m_values,k_values,I_values,
                                                        l, lc, m, k, I, β, M, K)
     
     return frequencies_rad, frequencies_Hz
-
-# frequencies_rad, frequencies_Hz = freq_calculation(links,m_values,k_values,I_values,
-#                                                    l_values,lc_values,β_values)
-# 
-# # Print dos resultados
-# print("Natural frequencies f (rad/s):")
-# for i, f in enumerate(frequencies_rad):
-#     print(f"f_{i+1} = {f:.8f} Hz")
-# 
-# # Print dos resultados
-# print("Natural frequencies f (Hz):")
-# for i, f in enumerate(frequencies_Hz):
-#     print(f"f_{i+1} = {f:.8f} Hz")
-     
-        
+      
