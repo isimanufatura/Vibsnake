@@ -5,6 +5,39 @@ from scipy.signal import find_peaks, periodogram
 from scipy.ndimage import gaussian_filter1d
 import os
 
+def escolha_arquivo(directory:str):
+    '''
+    Realiza a leitura de todos os arquivos presentes
+    no directory fornecido e permite a escolha de leitura
+    de um desses
+    
+    Parameters
+    ----------
+    directory : str
+        Caminho da pasta com todos os arquivos de interesse
+    '''
+    # Get all files (ignoring folders)
+    file_paths = []
+    for root, dirs, files in os.walk(directory):
+        for i, file in enumerate(files):
+            full_path = os.path.join(root, file)
+            file_paths.append([i + 1, full_path])
+
+    df = pd.DataFrame(file_paths, columns=["Número", "Arquivo"])
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.max_colwidth', None):
+        a = df.drop(columns=["Número"])
+        print(f"{a} \n")
+
+    x = int(input("Forneça o índice do arquivo de leitura: \n"))
+
+    arquivo = str(df.loc[x, "Arquivo"])
+
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.max_colwidth', None):
+        print(f"\nO arquivo escolhido é:\n{arquivo}\n")
+    
+    return arquivo 
+
+
 def tratamento_FFT(arquivo:str, corte:bool=False,
                    t_i: float = None, t_f:float = None):
     '''
