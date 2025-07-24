@@ -1,3 +1,23 @@
+'''
+Tratamento FFT
+=====
+
+Conjunto de funções utilizadas para o tratamento
+dos dados vibracionais obtidos em laboratório, com
+a criação de FFT, analisada inteira ou por corte,
+e cálculo das frequências dominantes
+
+Funções
+--
+#### escolha_arquivo :
+    Realiza a leitura de todos os arquivos presentes
+    no directory fornecido e permite a escolha de leitura
+    de um desses
+#### tratamento_FFT:
+    Realiza o tratamento da FFT de um arquivo de dados especificado.
+
+'''
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,7 +55,7 @@ def escolha_arquivo(directory:str):
     with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.max_colwidth', None):
         print(f"\nO arquivo escolhido é:\n{arquivo}\n")
     
-    return arquivo 
+    return arquivo
 
 
 def tratamento_FFT(arquivo:str, corte:bool=False,

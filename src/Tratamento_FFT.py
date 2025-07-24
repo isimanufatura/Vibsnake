@@ -1,12 +1,19 @@
 import os
 import pandas as pd
-import func_tratamento as ft
+import func_tratamento as fft
 
-# Specify the directory path
-directory_path = "Exp_data"  # e.g., "C:/Users/YourName/Documents"
+'''
+Código para o uso das funções de tratamento das FFTs
+'''
 
-arquivo = ft.escolha_arquivo(directory_path)
+# Especificar o caminho da pasta de leitura
+directory_path = "Exp_data"  # ex, "C:/Users/YourName/Documents"
 
-ft.tratamento_FFT(arquivo=arquivo,corte=True,t_i=1,t_f=2)
+# Chamar a função de leitura e escolha
+arquivo = fft.escolha_arquivo(directory_path)
 
-ft.tratamento_FFT(arquivo=arquivo,corte=False)
+# Exemplo de função tratada com corte
+fft.tratamento_FFT(arquivo=arquivo,corte=True,t_i=1,t_f=2)
+
+# Exemplo de função tratada sem cort
+fft.tratamento_FFT(arquivo=arquivo,corte=False)

@@ -1,20 +1,24 @@
+'''
+Natural Frequency symbolic function
+----
+
+Funções utilizadas para cálculos simbolicos e substituição de valores
+do problema para encontrar as frequências naturais do sistema
+de um manipulador robótico de n-links
+
+Cálculo baseado no artigo
+PIETRUŚ, P., & GIERLAK, P. (2020).
+Influence of the manipulator configuration on vibration effects.
+DOI 10.2478/ama-2023-0060 
+
+'''
+
 import sympy as sp
 import numpy as np
 from itertools import accumulate
 from scipy.linalg import eig
 
-'''
-# ======================================================================================================
-# Cálculo baseado no artigo
-# PIETRUŚ, P., & GIERLAK, P. (2020).
-# Influence of the manipulator configuration on vibration effects.
-# DOI 10.2478/ama-2023-0060 
-# ======================================================================================================
-#
-# Funções utilizadas para cálculos simbolicos e substituição de valores
-# do problema para encontrar as frequências naturais do sistema
-#
-'''
+
 
 def velocity(links, l, lc, α, αd, β):
     α_s = list(accumulate(α))
