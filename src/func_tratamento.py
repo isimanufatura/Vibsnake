@@ -133,7 +133,7 @@ def tratamento_FFT(arquivo:str, corte:bool=False,
     plt.tight_layout()
     plt.savefig(f'Export/{nome_arquivo} - Sinal de Aceleração com Picos Principais.pdf',format='pdf',bbox_inches='tight')
     plt.savefig(f'Export/{nome_arquivo} - Sinal de Aceleração com Picos Principais.png',format='png',bbox_inches='tight')
-    plt.show()
+    plt.show(block=False)
 
     # === FFT COM SINAL CORTADO ===
     fft_vals = np.fft.fft(acel_corte - np.mean(acel_corte))  # remove média
@@ -187,7 +187,7 @@ def tratamento_FFT(arquivo:str, corte:bool=False,
     plt.tight_layout()
     plt.savefig(f'Export/{nome_arquivo} - FFT do Sinal de Aceleração{intervalo}.pdf',format='pdf',bbox_inches='tight')
     plt.savefig(f'Export/{nome_arquivo} - FFT do Sinal de Aceleração{intervalo}.png',format='png',bbox_inches='tight')
-    plt.show()
+    plt.show(block=False)
 
     # === IMPRIME FREQUÊNCIAS DETECTADAS ===
     if corte:
@@ -197,3 +197,5 @@ def tratamento_FFT(arquivo:str, corte:bool=False,
     print(f"\nFrequências naturais dominantes detectadas em {nome_arquivo}{intervalo}:")
     for f in frequencias_dominantes:
         print(f" - {f:.2f} Hz")
+        
+    input("Aperte Enter para finalizar o programa...")
