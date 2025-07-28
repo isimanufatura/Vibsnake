@@ -39,9 +39,10 @@ def escolha_arquivo(directory:str):
     # Get all files (ignoring folders)
     file_paths = []
     for root, dirs, files in os.walk(directory):
-        for i, file in enumerate(files):
-            full_path = os.path.join(root, file)
-            file_paths.append([i + 1, full_path])
+        for file in files:
+            if file.endswith(".lvm"):  # <- filter .lvm files
+                full_path = os.path.join(root, file)
+                file_paths.append([len(file_paths) + 1, full_path])  # number correctly
 
     df = pd.DataFrame(file_paths, columns=["Número", "Arquivo"])
     with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.max_colwidth', None):
@@ -49,6 +50,12 @@ def escolha_arquivo(directory:str):
         print(f"{a} \n")
 
     x = int(input("Forneça o índice do arquivo de leitura: \n"))
+    
+    try:
+        arquivo = str(df.loc[df["Número"] == x, "Arquivo"].values[0])
+    except IndexError:
+        print("Índice inválido.")
+        return None
 
     arquivo = str(df.loc[x, "Arquivo"])
 
@@ -124,6 +131,8 @@ def tratamento_FFT(arquivo:str, corte:bool=False,
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig(f'Export/{nome_arquivo} - Sinal de Aceleração com Picos Principais.pdf',format='pdf',bbox_inches='tight')
+    plt.savefig(f'Export/{nome_arquivo} - Sinal de Aceleração com Picos Principais.png',format='png',bbox_inches='tight')
     plt.show()
 
     # === FFT COM SINAL CORTADO ===
@@ -176,6 +185,8 @@ def tratamento_FFT(arquivo:str, corte:bool=False,
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig(f'Export/{nome_arquivo} - FFT do Sinal de Aceleração{intervalo}.pdf',format='pdf',bbox_inches='tight')
+    plt.savefig(f'Export/{nome_arquivo} - FFT do Sinal de Aceleração{intervalo}.png',format='png',bbox_inches='tight')
     plt.show()
 
     # === IMPRIME FREQUÊNCIAS DETECTADAS ===
