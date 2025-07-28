@@ -137,7 +137,7 @@ def bar_plot_values(bars):
                  f'{height:.2f}', ha='center', va='bottom')
 
 
-fig, ax = plt.figure(figsize=(10,7))
+plt.figure(figsize=(10,7))
 
 freq = np.arange(5) + 1
 
