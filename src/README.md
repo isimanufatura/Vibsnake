@@ -50,3 +50,4 @@ tendo como saída da função as listas de frequências naturais em rad e Hz.
 
 ## Outro códigos
 
+1. [Teorema_Nyquist_teste.py](./Teorema_Nyquist_teste.py) → 
