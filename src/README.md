@@ -10,7 +10,11 @@ PIETRUŚ, P., & GIERLAK, P. (2020).
 
 ### Teoria
 
-Os autores se basearam na abordagem de energias para obter a equação de movimento $ M \ddot{\alpha} + C \dot{\alpha} + K \alpha = 0 $ do robô de duas juntas planares, apresentado na figura.
+Os autores se basearam na abordagem de energias para obter a equação de movimento 
+
+$ M \ddot{\alpha} + C \dot{\alpha} + K \alpha = 0 $ 
+
+do robô de duas juntas planares, apresentado na figura.
 
 <center>
     <figure>
