@@ -20,17 +20,16 @@ Os autores se basearam na abordagem de energias para obter a equação de movime
 </center>
 
 Para resolver a equação, os termos de amortecimento foram descartados, por causa de sua baixa influência no valor das frequências naturais da estutura, além de simplificar o cálculo, obtendo,
-$$
-M \ddot{\alpha} + K \alpha = 0,
-$$
+
+$M \ddot{\alpha} + K \alpha = 0,$
+
 o qual é um problema de autovalor e autovetor, resolvido por,
-$$
-A \vec{x} = \lambda \vec{x},
-$$
+
+$A \vec{x} = \lambda \vec{x},$
+
 com solução,
-$$
-det(-\omega^2 M + K) = 0.
-$$
+
+$det(-\omega^2 M + K) = 0.$
 
 ### Uso do código
 
