@@ -28,7 +28,7 @@ Informações detalhadas sobre os arquivos experimentais
 📂 [Aquisição somente acelerômetro](./Exp_data/Aquisição somente acelerômetro(Link6)/)
 Contém dados adquiridos por meio de testes com acelerômetro e infraestrutura de medição (LabView), sem movimentação do manipulador.
 
-📂 [Aquisição acelerômetro (FFT)](./Exp_data/Aquisição acelerômetro(FFT)/)
+📂 [Aquisição acelerômetro (FFT)](./Exp_data/Aquisição%20somente%20acelerômetro(Link6)/))
 Pasta principal com os dados utilizados para o desenvolvimento do trabalho.
 
 📂 [Aquisição dinâmica – Link 6](./Exp_data/Aquisição acelerômetro(FFT)/Aquisição_dinâmica/)
