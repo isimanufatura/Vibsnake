@@ -23,3 +23,22 @@ O repositório é dividido nas seguintes pastas:
 - 📝 [Arquivos gerados](./Export/) → Arquivos gerados pelos códigos de análise
 - 📓 [Notebooks - Google Colab](./Google_colab/) → Arquivos de código para análise analítica e de dados experimentais em formato .ipynb
 - 🧠 [Source Code - Python](./src/) → Arquivos de código para análise analítica e de dados experimentais -❓[Como usar](./src/README.md)
+
+Informações detalhadas sobre os arquivos experimentais
+📂 [Aquisição somente acelerômetro](./Exp_data/Aquisição somente acelerômetro(Link6)/)
+Contém dados adquiridos por meio de testes com acelerômetro e infraestrutura de medição (LabView), sem movimentação do manipulador.
+
+📂 [Aquisição acelerômetro (FFT)](./Exp_data/Aquisição acelerômetro(FFT)/)
+Pasta principal com os dados utilizados para o desenvolvimento do trabalho.
+
+📂 [Aquisição dinâmica – Link 6](./Exp_data/Aquisição acelerômetro(FFT)/Aquisição_dinâmica/)
+Dados obtidos com o acelerômetro fixado no Link 6, enquanto o manipulador realiza um movimento da posição vertical para a horizontal, acionando apenas a junta 1.
+
+📂 [Impacto – Link 4](./Exp_data/Aquisição acelerômetro(FFT)/Link 4/)
+Medições com o acelerômetro fixado no Link 4, com impacto aplicado manualmente na extremidade livre do robô.
+
+📂 [Impacto – Link 5](./Exp_data/Aquisição acelerômetro(FFT)/Link 5/)
+Medições com o acelerômetro fixado no Link 5, com impacto aplicado manualmente na extremidade livre do robô.
+
+📂 [Impacto – Link 6](./Exp_data/Aquisição acelerômetro(FFT)/Link 6/)
+Medições com o acelerômetro fixado no Link 6, com impacto aplicado manualmente na extremidade livre do robô.
