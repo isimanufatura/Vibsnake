@@ -185,9 +185,11 @@ def create_subs_ang_V(links, α, β):
         subs[sp.sin(θ[i])] = sp.sin(β_s[i]) + α_s[i] * sp.cos(β_s[i])
     return subs
 
-subs = create_subs_ang_V(links, α, β)
+# ==================== RETIRADA ====================
+# subs = create_subs_ang_V(links, α, β)
 
-V_tot = V_tot.subs(subs)
+# ==================== RETIRADA ====================
+# V_tot = V_tot.subs(subs)
 print(f"Energia potencial total V")
 print(f"com substituição das Eq. (7) e (8): \n {V_tot}\n")
 
@@ -387,3 +389,26 @@ K_np = np.array(K.tolist(), dtype=np.float64)
 
 print(f"A matriz de massa M é: \n{M_np}\n")
 print(f"A matriz de rigidez K é: \n{K_np}\n")
+
+'''
+# Resolvendo o sistema linear
+'''
+
+# Resolve o sistema linear Kx = λMx
+eigvals, eigvecs = eig(K_np, M_np)
+
+# Retira a parte real (autovalores podem ser complexos por
+# causa de arredondamentos)
+eigvals_real = np.real(eigvals)
+
+# Cálculo das frequências em rad/s
+frequencies_rad = np.sqrt(eigvals_real)
+
+# Ordena as frequências
+frequencies_rad.sort()
+
+# Transformas as frequenências em Hz
+frequencies_Hz = frequencies_rad / (2 * np.pi)
+
+# Ordena as frequências
+frequencies_Hz.sort()

@@ -187,9 +187,9 @@ def symbolic_calculation(links):
     V_tot = sum(V)
     V_tot = sp.expand(V_tot)
 
-    subs = create_subs_ang_V(links, α, β)
+    # subs = create_subs_ang_V(links, α, β)
 
-    V_tot = V_tot.subs(subs)
+    # V_tot = V_tot.subs(subs)
 
     '''
     # Cálculo da deflexão estática
@@ -204,13 +204,13 @@ def symbolic_calculation(links):
     # Substituições e simpificações das deflexões estáticas
     '''
     # Zerando as deflexões estáticas ao quadrado
-    subs_zero_αst_squared = zero_αst_squared(links, αst)
-    V_tot = V_tot.subs(subs_zero_αst_squared)
-
+    # subs_zero_αst_squared = zero_αst_squared(links, αst)
+    # V_tot = V_tot.subs(subs_zero_αst_squared)
+    
     # Substituindo as deflexões estáticas
     subs_αst = αst_substitution(links, αst, α_st)
     V_tot = V_tot.subs(subs_αst)
-    V_tot = sp.simplify(V_tot)
+    # V_tot = sp.simplify(V_tot)
     V = V_tot
     
     print("Energias potenciais calculadas")
