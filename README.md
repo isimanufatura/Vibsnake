@@ -31,6 +31,9 @@ Informações detalhadas sobre os arquivos experimentais:
 📂 [Aquisição acelerômetro (FFT)](./Exp_data/Aquisições%20acelerômetro(FFT)/) → Pasta principal com os dados utilizados para o desenvolvimento do trabalho.
 
 📂 [Aquisição dinâmica – Link 6](./Exp_data/Aquisições%20acelerômetro(FFT)/Aquisição_dinâmica/) → Dados obtidos com o acelerômetro fixado no Link 6, enquanto o manipulador realiza um movimento da posição vertical para a horizontal, acionando apenas a junta 1.
+
 📂 [Impacto – Link 4](./Exp_data/Aquisições%20acelerômetro(FFT)/Link%4/) → Medições com o acelerômetro fixado no Link 4, com impacto aplicado manualmente na extremidade livre do robô.
+
 📂 [Impacto – Link 5](./Exp_data/Aquisições%20acelerômetro(FFT)/Link%5/) → Medições com o acelerômetro fixado no Link 5, com impacto aplicado manualmente na extremidade livre do robô.
+
 📂 [Impacto – Link 6](./Exp_data/Aquisições%20acelerômetro(FFT)/Link%6/) → Medições com o acelerômetro fixado no Link 6, com impacto aplicado manualmente na extremidade livre do robô.
