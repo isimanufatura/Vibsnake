@@ -1,7 +1,4 @@
-import os
-import pandas as pd
 import func_tratamento as fft
-import numpy as np
 
 '''
 Código para o uso das funções de tratamento das FFTs
