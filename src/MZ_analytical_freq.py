@@ -224,6 +224,74 @@ for i, f in enumerate(frequencies_rad):
 print("Natural frequencies f (Hz):")
 for i, f in enumerate(frequencies_Hz):
     print(f"f_{i+1} = {f:.8f} Hz")
+    
+# %%
+
+def bar_plot_values(bars,rotation):
+    for bar in bars:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height+1,
+                 f'{height:.2f}', ha='center', va='bottom',rotation=rotation)
+
+
+plt.figure(figsize=(6,5))
+
+freq = np.arange(5) + 1
+freq2 = np.arange(6) + 1
+
+width = 0.15
+bar2 = plt.bar(freq - width/2, models_f_Hz[2], width, label = 'Modelo 1')
+bar3 = plt.bar(freq2 + width/2, models_f_Hz[3], width, label = 'Modelo 2')
+#bar4 = plt.bar(freq2 + width*2, models_f_Hz[4], width, label = 'Modelo 4')
+
+bar_plot_values(bar2, rotation=90)
+bar_plot_values(bar3, rotation=90)
+#bar_plot_values(bar4, rotation=90)
+
+plt.legend()
+
+plt.xlabel("Natural Frequency Number")
+plt.ylabel("Frequency [Hz]")
+plt.tight_layout()
+plt.ylim(0,160)
+plt.savefig("Export/codes/modelos_freq.pdf", format="pdf", bbox_inches='tight')
+plt.savefig("Export/codes/modelos_freq.svg", format="svg", bbox_inches='tight')
+plt.show()
+
+
+# %%
+
+def bar_plot_values(bars,rotation):
+    for bar in bars:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height+1,
+                 f'{height:.2f}', ha='center', va='bottom',rotation=rotation)
+
+
+plt.figure(figsize=(7,5))
+
+freq = np.arange(5) + 1
+freq2 = np.arange(6) + 1
+
+width = 0.15
+bar1 = plt.bar(freq - width, models_f_Hz[1], width, label = 'Modelo 1')
+bar2 = plt.bar(freq, models_f_Hz[2], width, label = 'Modelo 2')
+bar3 = plt.bar(freq2 + width, models_f_Hz[3], width, label = 'Modelo 3')
+#bar4 = plt.bar(freq2 + width*2, models_f_Hz[4], width, label = 'Modelo 4')
+
+bar_plot_values(bar1, rotation=90)
+bar_plot_values(bar2, rotation=90)
+bar_plot_values(bar3, rotation=90)
+#bar_plot_values(bar4, rotation=90)
+
+plt.legend()
+
+plt.xlabel("Natural Frequency Number")
+plt.ylabel("Frequency [Hz]")
+plt.tight_layout()
+plt.ylim(0,150)
+plt.savefig("Export/codes/modelos_freq.pdf", format="pdf", bbox_inches='tight')
+plt.show()
 
 # %%
 
@@ -239,7 +307,7 @@ plt.figure(figsize=(10,7))
 freq = np.arange(5) + 1
 freq2 = np.arange(6) + 1
 
-width = 0.10
+width = 0.15
 bar1 = plt.bar(freq - width*2, models_f_Hz[1], width, label = 'Modelo 1')
 bar2 = plt.bar(freq - width/2, models_f_Hz[2], width, label = 'Modelo 2')
 bar3 = plt.bar(freq2 + width/2, models_f_Hz[3], width, label = 'Modelo 3')
